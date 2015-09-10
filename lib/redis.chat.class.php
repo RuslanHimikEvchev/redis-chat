@@ -9,6 +9,8 @@ require_once 'redis.factory.php';
 require_once 'RedisServiceChat.php';
 class RedisChat extends RedisFactoryManager {
 
+    private $chat_hash = 'chat';
+
     public function createRoom($room_name)
     {
         if(empty($room_name)) return RedisServiceChat::Message('Enter the name of room');
@@ -21,7 +23,11 @@ class RedisChat extends RedisFactoryManager {
             }
             else
             {
-                if($this->handle->lPush($room_name, 'Moderator-|-'.date('Y-m-d h:m:s').'-|-Create room'))
+                if($this->handle->lPush($room_name, serialize(array(
+                            'user_name' => 'Moderator',
+                            'date' => date('H:m:s'),
+                            'message' => 'create room'
+                ))))
                     return RedisServiceChat::Message('Room creating');
             }
         }
@@ -42,12 +48,8 @@ class RedisChat extends RedisFactoryManager {
                 $mess = array();
                 foreach($messages as $message)
                 {
-                    list($user, $date, $handler) = explode('-|-', $message);
-                    $mess[] = array(
-                        'user_name' => $user,
-                        'date' => $date,
-                        'message' => $handler
-                    );
+                    $mess_arr = unserialize($message);
+                    $mess[] = $mess_arr;
                 }
                 return $mess;
             }
@@ -67,7 +69,11 @@ class RedisChat extends RedisFactoryManager {
         if(empty($room_name) || empty($user_name) || empty($message)) return RedisServiceChat::Message('Please, try again');
         try
         {
-            $this->handle->lPush($room_name, $user_name.'-|-'.date('H:m:s').'-|-'.$message);
+            $this->handle->lPush($room_name, serialize(array(
+                'user_name' => $user_name,
+                'date' => date('H:m:s'),
+                'message' => $message
+            )));
         }
         catch (RedisException $e)
         {
