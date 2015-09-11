@@ -12,6 +12,7 @@
         cursor: pointer;
     }
     #chat_block {
+        float: left;
         width: 80%;
         height: 600px;
         background-color: azure;
@@ -34,6 +35,7 @@
         width: 150px;
         height: 40px;
     }
+
     #rooms
     {
         float: right;
@@ -60,9 +62,10 @@
     <input type="button" value="Ok" id="login">
 </div>
 <div class="chat" style="display: none">
-    Chat:<br>
-    <div id="rooms">
 
+   <div style="float: left; text-align: center; width: 15%"> Chat:</div> <div style="float: right; text-align: center; width: 15%">Rooms:</div>
+    <br>
+    <div id="rooms">
     </div>
     <div id="chat_block">
     </div>
