@@ -72,19 +72,26 @@ function set_session(name)
 function get_chatdata()
 {
     var div = $("#chat_block");
+    var safe_div = $("#chat_block").text();
     $.ajax({
         type: 'get',
         url: "chat.php",
         data: {view: 1},
         success: function (data) {
-            //data = JSON.stringify(data);
             data = JSON.parse(data);
-            //console.log(data);
+            //var safe_div = div;
             div.empty('');
             for(var i = 0; i < data.length; i++)
             {
                 var blok = '<div style="margin-left: 10px;margin-right: 10px;margin-top: 10px; margin-bottom: 10px;"><b>' + data[i].user_name + '</b>: ' + data[i].date + ' : ' + data[i].message + '</div>';
                 div.prepend(blok);
+            }
+            //console.log(safe_div.length)
+            if(safe_div.length == 5) return;
+            if(div.text().length != safe_div.length)
+            {
+                var audio = new Audio('sound/new.mp3');
+                audio.play();
             }
         }
     })
