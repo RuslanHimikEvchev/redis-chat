@@ -12,7 +12,7 @@
         cursor: pointer;
     }
     #chat_block {
-        width: 90%;
+        width: 80%;
         height: 600px;
         background-color: azure;
         overflow-y: scroll;
@@ -22,7 +22,7 @@
     #write {
         border-radius: 4px;
         border: groove;
-        width: 90%;
+        width: 80%;
         height: 25px;
     }
     #sent
@@ -34,6 +34,23 @@
         width: 150px;
         height: 40px;
     }
+    #rooms
+    {
+        float: right;
+        width: 15%;
+        background-color: azure;
+        overflow-y: scroll;
+        height: 600px;
+        border: groove;
+    }
+    .rooms_change
+    {
+        background-color: cyan;
+        width: 100px;
+        height: 40px;
+        font-size: medium;
+        cursor: pointer;
+    }
 </style>
 <body>
 <input type="hidden" id="hide_name" value="">
@@ -43,6 +60,10 @@
     <input type="button" value="Ok" id="login">
 </div>
 <div class="chat" style="display: none">
+    Chat:<br>
+    <div id="rooms">
+
+    </div>
     <div id="chat_block">
     </div>
     <br><br>
@@ -52,6 +73,7 @@
         <input type="submit" value="Отправить" id="sent">
     </div>
 </div>
+
 <script src="js/chat.js" type="text/javascript"></script>
 </body>
 </html>

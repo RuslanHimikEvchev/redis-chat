@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+</head>
+<body>
+<div style="cursor: pointer">
+    <input type="text" id="room_name" value="">
+    <input type="button" id="room_name_cr" value="Создать комнату">
+</div>
+<script>
+    $(document).ready(function(){
+        $("#room_name_cr").click(function(){
+            var room_name = $("#room_name").val();
+            console.log(room_name)
+            $.ajax({
+                type: 'POST',
+                url: 'chat.php',
+                data: {room_name: room_name},
+                success: function(data)
+                {
+
+                }
+            })
+        })
+    });
+</script>
+</body>
+</html>

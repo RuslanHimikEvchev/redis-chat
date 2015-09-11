@@ -9,8 +9,30 @@ require_once 'redis.factory.php';
 require_once 'RedisServiceChat.php';
 class RedisChat extends RedisFactoryManager {
 
-    private $chat_hash = 'chat';
+    //Expire life time room
+    private $room_expire = 86400;
 
+    //set on public rooms list
+    private $rooms_hash = 'public_rooms';
+
+    //default room name
+    public $default_room = 'main';
+
+    //serialization message data
+    private static function adapt($array = array(), $decode = false)
+    {
+        if(is_array($array) || is_string($array))
+            if(!$decode)
+                return serialize($array);
+            else
+                return unserialize($array);
+        return false;
+    }
+
+    /**
+     * @param $room_name (string)
+     * @return array (service message strings)
+     */
     public function createRoom($room_name)
     {
         if(empty($room_name)) return RedisServiceChat::Message('Enter the name of room');
@@ -23,12 +45,17 @@ class RedisChat extends RedisFactoryManager {
             }
             else
             {
-                if($this->handle->lPush($room_name, serialize(array(
+                if($this->handle->lPush($room_name, $this->adapt(array(
                             'user_name' => 'Moderator',
-                            'date' => date('H:m:s'),
-                            'message' => 'create room'
+                            'date' => date('H:i:s'),
+                            'message' => 'create room '.$room_name
                 ))))
-                    return RedisServiceChat::Message('Room creating');
+                    if(!$this->handle->sIsMember($this->rooms_hash, $room_name))
+                        if($this->handle->sAdd($this->rooms_hash, $room_name))
+                    {
+                        $this->handle->expire($room_name, $this->room_expire);
+                        return RedisServiceChat::Message('Room creating');
+                    }
             }
         }
         catch(RedisException $e)
@@ -37,6 +64,11 @@ class RedisChat extends RedisFactoryManager {
             return RedisServiceChat::Message('Error on creating room');
         }
     }
+
+    /**
+     * @param $room_name
+     * @return array (of messages)
+     */
 
     public function HandleRoom($room_name)
     {
@@ -48,7 +80,7 @@ class RedisChat extends RedisFactoryManager {
                 $mess = array();
                 foreach($messages as $message)
                 {
-                    $mess_arr = unserialize($message);
+                    $mess_arr = $this->adapt($message, true);
                     $mess[] = $mess_arr;
                 }
                 return $mess;
@@ -64,14 +96,20 @@ class RedisChat extends RedisFactoryManager {
         }
     }
 
+    /**
+     * @param $room_name (string)
+     * @param $user_name (string or int)
+     * @param $message (string or int)
+     * @return array (service message array)
+     */
     public function PushMessage($room_name, $user_name, $message)
     {
         if(empty($room_name) || empty($user_name) || empty($message)) return RedisServiceChat::Message('Please, try again');
         try
         {
-            $this->handle->lPush($room_name, serialize(array(
+            $this->handle->lPush($room_name, $this->adapt(array(
                 'user_name' => $user_name,
-                'date' => date('H:m:s'),
+                'date' => date('H:i:s'),
                 'message' => $message
             )));
         }
@@ -79,5 +117,27 @@ class RedisChat extends RedisFactoryManager {
         {
             echo $e->getMessage();
         }
+    }
+
+    /**
+     * @return bool|string (list of public rooms)
+     */
+    public function GetRooms()
+    {
+        if($rooms = $this->handle->sMembers($this->rooms_hash))
+        {
+            //$rooms = $this->json($rooms, true);
+            //var_dump($rooms);
+            foreach($rooms as $key => $room)
+            {
+                if(!$this->handle->exists($room))
+                {
+                    $this->handle->sRem($this->rooms_hash, $room);
+                    unset($rooms[$key]);
+                }
+            }
+            return json_encode($rooms);
+        }
+        return false;
     }
 }
