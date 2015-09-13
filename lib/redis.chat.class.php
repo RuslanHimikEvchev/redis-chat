@@ -17,6 +17,7 @@ class RedisChat extends RedisFactoryManager {
 
     //default room name
     public $default_room = 'main';
+    public $users = 'users';
 
     //serialization message data
     private static function adapt($array = array(), $decode = false)
@@ -139,5 +140,41 @@ class RedisChat extends RedisFactoryManager {
             return json_encode($rooms);
         }
         return false;
+    }
+
+    public function CreateUser($user_name)
+    {
+        if(empty($user_name) || strlen($user_name) > 14) return RedisServiceChat::Message('Name must be 14 characters or lower');
+        try
+        {
+            $this->handle->sAdd($this->users, $user_name);
+        }
+        catch(RedisException $e)
+        {
+            echo $e->getMessage();
+            return false;
+        }
+        return RedisServiceChat::Message('Creating user: '.$user_name);
+    }
+
+    public function GetUsers()
+    {
+        try
+        {
+            $users = $this->handle->sMembers($this->users);
+        }
+        catch (RedisException $e)
+        {
+            echo $e->getMessage();
+            return false;
+        }
+        if(!empty($users))
+        {
+            return json_encode($users);
+        }
+        else
+        {
+            return false;
+        }
     }
 }

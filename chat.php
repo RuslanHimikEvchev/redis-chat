@@ -8,6 +8,7 @@
 
 error_reporting(1);
 session_start();
+//session_destroy();
 require_once 'lib/redis.chat.class.php';
 $red = new RedisChat(1);
 if($_GET['view'])
@@ -34,6 +35,7 @@ if($_GET['write'])
 if($_GET['name'])
 {
     $_SESSION['name'] = $_GET['name'];
+    $red->CreateUser($_SESSION['name']);
     $_SESSION['room'] = empty($_GET['room']) ? $red->default_room : $_GET['room'];
 }
 if($_GET['session'])
@@ -65,4 +67,8 @@ if($_POST['room_name'])
 if($_GET['change_room'])
 {
     $_SESSION['room'] = $_GET['change_room'];
+}
+if($_GET['users'])
+{
+    echo $red->GetUsers();
 }

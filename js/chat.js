@@ -9,6 +9,7 @@ $(document).ready(function() {
     setTimeout(
         setInterval(get_rooms, 4000),
         2000);
+    setInterval(get_users, 3000);
     $("#login").click(function () {
         var name = $("#name").val();
         set_session(name);
@@ -147,6 +148,26 @@ function change_room(room)
         data: {change_room: room},
         success: function(data) {
 
+        }
+    })
+}
+
+function get_users()
+{
+    var div = $("#users_block");
+    $.ajax({
+        type: 'get',
+        url: 'chat.php',
+        data: {users: 1},
+        success: function(data){
+            data = JSON.parse(data);
+            div.empty();
+            for(var i = 0; i < data.length; i++)
+            {
+                var block = '<div style="margin-left: 10px;margin-right: 10px;margin-top: 10px; margin-bottom: 10px;"><b>' +
+                    data[i] + '</div>';
+                div.prepend(block);
+            }
         }
     })
 }

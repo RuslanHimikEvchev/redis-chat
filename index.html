@@ -13,7 +13,7 @@
     }
     #chat_block {
         float: left;
-        width: 80%;
+        width: 75%;
         height: 600px;
         background-color: azure;
         overflow-y: scroll;
@@ -23,7 +23,7 @@
     #write {
         border-radius: 4px;
         border: groove;
-        width: 80%;
+        width: 75%;
         height: 25px;
     }
     #sent
@@ -39,7 +39,7 @@
     #rooms
     {
         float: right;
-        width: 15%;
+        width: 10%;
         background-color: azure;
         overflow-y: scroll;
         height: 600px;
@@ -52,6 +52,15 @@
         height: 40px;
         font-size: medium;
         cursor: pointer;
+    }
+    #users
+    {
+        width: 10%;
+        float: right;
+        background-color: azure;
+        overflow-y: scroll;
+        height: 100px;
+        border: groove;
     }
 </style>
 <body>
@@ -70,10 +79,17 @@
     <div id="chat_block">
     </div>
     <br><br>
-    <div id="message">
+    <div id="message" style="float: left">
         Message:<br><br>
         <input size="50" name="user_message" id="write"><br><br>
         <input type="submit" value="Отправить" id="sent">
+    </div>
+    <br>
+    <div id="users">
+        Users:<br>
+        <div id="users_block">
+
+        </div>
     </div>
 </div>
 
